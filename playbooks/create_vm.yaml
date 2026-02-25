@@ -6,7 +6,7 @@
   # On installe TOUT avant de commencer les tâches principales
   pre_tasks:
     - name: "Forcer l'installation de la collection community.general"
-      shell: "ansible-galaxy collection install community.general"
+      shell: "ansible-galaxy collection install community.general.proxmox"
     
     - name: "Installer la librairie Python proxmoxer"
       pip:
