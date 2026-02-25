@@ -29,7 +29,7 @@
         sockets: 1
         
         # Disque et Réseau
-        disk: 20G
+        disk: 5G
         netif: '{"net0":"virtio,bridge=vmbr0"}'
         
         # État souhaité
