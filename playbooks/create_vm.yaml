@@ -3,9 +3,15 @@
   hosts: localhost
   gather_facts: false
 
-  collections:
-    - community.general
-    - community.proxmox
+  # On installe TOUT avant de commencer les tâches principales
+  pre_tasks:
+    - name: "Forcer l'installation de la collection community.general"
+      shell: "ansible-galaxy collection install community.general"
+    
+    - name: "Installer la librairie Python proxmoxer"
+      pip:
+        name: proxmoxer
+        state: present
   vars:
     pve_node: "pve"           
     pve_api_host: "192.168.1.12"
