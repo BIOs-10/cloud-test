@@ -2,6 +2,10 @@
 - name: Création d'une VM sur Proxmox
   hosts: localhost
   gather_facts: false
+
+  collections:
+    - community.general
+    - community.proxmox
   vars:
     pve_node: "pve"           
     pve_api_host: "192.168.1.12"
