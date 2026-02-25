@@ -4,7 +4,7 @@
   gather_facts: false
 
   vars:
-    message_test: "Hello ! La VM de test est (virtuellement) créée avec succès."
+    message_test: "Hello ! pour le test."
 
   tasks:
     - name: Afficher le message de confirmation
@@ -14,7 +14,7 @@
     - name: Simuler une étape de déploiement
       ansible.builtin.pause:
         seconds: 2
-        prompt: "Initialisation en cours..."
+        prompt: "en cours..."
 
     - name: Message final
       debug:
