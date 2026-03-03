@@ -15,7 +15,7 @@
         state: present
 
     - name: "2. Installation forcée de la collection"
-      shell: "ansible-galaxy collection install community.promox -p /tmp/collections"
+      shell: "ansible-galaxy collection install community.proxmox -p /tmp/collections"
       
     - name: Créer une nouvelle VM QEMU
       community.proxmox.proxmox_kvm:
