@@ -1,21 +1,36 @@
 ---
-- name: Playbook de test minimaliste
+- name: Création d'une VM sur Proxmox
   hosts: localhost
   gather_facts: false
-
   vars:
-    message_test: "Hello ! pour le test."
+    pve_node: "pve"           
+    pve_api_host: "192.168.1.12"
+    pve_user: "root@pam"          
+    pve_password: "kun_123456" 
 
   tasks:
-    - name: Afficher le message de confirmation
-      debug:
-        msg: "{{ message_test }}"
+    - name: Créer une nouvelle VM QEMU
+      community.proxmox.proxmox_kvm:
+        node: "{{ pve_node }}"
+        api_host: "{{ pve_api_host }}"
+        api_user: "{{ pve_user }}"
+        api_password: "{{ pve_password }}"
+        validate_certs: false 
 
-    - name: Simuler une étape de déploiement
-      ansible.builtin.pause:
-        seconds: 2
-        prompt: "en cours..."
-
-    - name: Message final
-      debug:
-        msg: "Test terminé AWX communique bien avec le dépôt Git."
+        # Configuration de la VM
+        name: "vm-demo"
+        vmid: 150
+        target: "{{ pve_node }}"
+        storage: "local-lvm"
+        
+        # Ressources
+        memory: 2048
+        cores: 2
+        sockets: 1
+        
+        # Disque et Réseau
+        disk: 5G
+        netif: '{"net0":"virtio,bridge=vmbr0"}'
+        
+        # État souhaité
+        state: present
