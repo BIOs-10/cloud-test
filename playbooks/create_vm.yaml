@@ -9,14 +9,7 @@
     pve_password: "kun_123456" 
 
   tasks:
-    - name: "1. Installation forcée de la librairie Python Proxmoxer"
-      pip:
-        name: proxmoxer
-        state: present
-
-    - name: "2. Installation forcée de la collection"
-      shell: "ansible-galaxy collection install community.proxmox -p /tmp/collections"
-      
+  
     - name: Créer une nouvelle VM QEMU
       community.proxmox.proxmox_kvm:
         node: "{{ pve_node }}"
