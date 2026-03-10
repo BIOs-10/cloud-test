@@ -11,7 +11,7 @@
   tasks:
   
     - name: Créer une nouvelle VM QEMU
-      community.general.proxmox_kvm:
+      community.proxmox.proxmox_kvm:
         node: "{{ pve_node }}"
         api_host: "{{ pve_api_host }}"
         api_user: "{{ pve_user }}"
