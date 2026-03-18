@@ -2,20 +2,15 @@
 - name: Création d'une VM sur Proxmox
   hosts: localhost
   gather_facts: false
-  vars:
-    pve_node: "pve"           
-    pve_api_host: "192.168.1.12"
-    pve_user: "root@pam"          
-    pve_password: "kun_123456" 
-
   tasks:
   
     - name: Créer une nouvelle VM QEMU
       community.proxmox.proxmox_kvm:
-        node: "{{ pve_node }}"
-        api_host: "{{ pve_api_host }}"
-        api_user: "{{ pve_user }}"
-        api_password: "{{ pve_password }}"
+        node: "proj-cloudi2"
+        api_host: "{{ lookup('env', 'PROXMOX_URL') }}"
+        api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
+        api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
+        api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
         validate_certs: false 
 
         # Configuration de la VM
