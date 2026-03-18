@@ -3,6 +3,9 @@
   hosts: localhost
   gather_facts: false
   tasks:
+    - name: install proxmoxer
+      pip:
+        name: proxmoxer
   
     - name: Créer une nouvelle VM QEMU
       community.proxmox.proxmox:
