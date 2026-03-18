@@ -1,0 +1,29 @@
+---
+- name: Création d'une VM sur Proxmox
+  hosts: localhost
+  gather_facts: false
+  
+  tasks:
+    - name: install proxmoxer
+      pip:
+        name: proxmoxer
+  
+    - name: Créer une nouvelle VM QEMU
+      community.proxmox.proxmox:
+        node: "pve"
+        
+        api_host: 192.168.1.12
+        api_port: 8006
+        api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
+        api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
+        api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
+        validate_certs: false 
+
+        vmid: 145
+        hostname: test-lxc
+        ostemplate: local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst
+        
+        storage: local-lvm
+        password: "root123"
+        
+        state: present
