@@ -1,6 +1,0 @@
----
-plugin: community.general.proxmox
-url: https://192.168.1.12:8006
-user: root@pve
-token_id: ansible
-token_secret: "{{ PROXMOX_TOKEN_SECRET }}"

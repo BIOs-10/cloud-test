@@ -1,0 +1,11 @@
+---
+plugin: community.proxmox.proxmox
+url: "{{ lookup('env', 'PROXMOX_URL') }}"
+user: "{{ lookup('env', 'PROXMOX_USER') }}"
+token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
+token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
+validate_certs: true
+want_facts: true
+want_proxmox_nodes_ansible_host: false
+compose:
+  ansible_host: proxmox_ipconfig0.ip | default(proxmox_net0.ip) | ipaddr('address')
