@@ -13,7 +13,7 @@
         url: "https://{{ lookup('env', 'PROXMOX_HOST') }}:8006/api2/json/cluster/nextid"
         method: GET
         headers:
-          Authorization: "PVEAPIToken={{ lookup('env', 'PROXMOX_TOKEN_ID') }}={{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
+          Authorization: "PVEAPIToken={{ lookup('env', 'PROXMOX_USER') }}!{{ lookup('env', 'PROXMOX_TOKEN_ID') }}={{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
         validate_certs: false
       register: next_id_response
       
