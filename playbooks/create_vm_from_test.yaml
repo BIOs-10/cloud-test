@@ -19,13 +19,14 @@
         api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
         validate_certs: false 
 
-        vmid: 145
         hostname: "{{ vm_name }}"
-        cpus: "{{ cpu }}"
+        cores: "{{ cpu }}"
         memory: "{{ ram }}"
         ostemplate: local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst
+
+        features: "nesting=1"
         
         storage: local-lvm
         password: "root123"
         
-        state: present
+        state: started
