@@ -30,4 +30,3 @@
         password: "root123"
         
         state: present
-        status: started
