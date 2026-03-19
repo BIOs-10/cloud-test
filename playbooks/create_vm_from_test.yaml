@@ -7,16 +7,16 @@
     - name: install proxmoxer
       pip:
         name: proxmoxer
-   - name: Trouver le prochain VMID disponible
-     delegate_to: localhost
-     uri:
-       url: "https://{{ lookup('env', 'PROXMOX_HOST') }}:8006/api2/json/cluster/nextid"
-       method: GET
-       headers:
-         Authorization: "PVEAPIToken={{ lookup('env', 'PROXMOX_TOKEN_ID') }}={{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
-       validate_certs: false
-     register: next_id_response
-  
+    - name: Trouver le prochain VMID disponible
+      delegate_to: localhost
+      uri:
+        url: "https://{{ lookup('env', 'PROXMOX_HOST') }}:8006/api2/json/cluster/nextid"
+        method: GET
+        headers:
+          Authorization: "PVEAPIToken={{ lookup('env', 'PROXMOX_TOKEN_ID') }}={{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
+        validate_certs: false
+      register: next_id_response
+      
     - name: Créer une nouvelle VM QEMU
       community.proxmox.proxmox:
         node: "pve"
