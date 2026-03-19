@@ -20,7 +20,6 @@
         validate_certs: false 
 
         hostname: "{{ vm_name }}"
-        vmid: 145
         cores: "{{ cpu }}"
         memory: "{{ ram }}"
         ostemplate: local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst
@@ -30,4 +29,5 @@
         storage: local-lvm
         password: "root123"
         
-        state: started
+        state: present
+        status: started
