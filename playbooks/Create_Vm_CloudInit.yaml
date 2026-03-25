@@ -1,0 +1,31 @@
+---
+- name: Création d'une VM sur Proxmox
+  hosts: localhost
+  gather_facts: false
+  
+  tasks:
+    - name: install proxmoxer
+      pip:
+        name: proxmoxer
+  
+    - name: Créer une nouvelle VM QEMU
+      community.proxmox.proxmox_kvm:
+        api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
+        api_port: "{{ lookup('env', 'PROXMOX_PORT') }}"
+        api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
+        api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
+        api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
+        validate_certs: false
+
+        node: "proj-cloudi2"
+        name: "test-vm"
+        full: true
+        storage: local-lvm
+        format: qcow2
+        timeout: 500
+
+        citype: nocloud
+        cicustom: "user=local:snippets/user_test.yaml"
+
+        ipconfig:
+          ipconfig0: "ip=dhcp"
