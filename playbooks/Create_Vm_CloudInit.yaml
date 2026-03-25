@@ -1,5 +1,5 @@
 ---
-- name: Création d'une VM sur Proxmox
+- name: Création d'une VM + Cloud init sur Proxmox
   hosts: localhost
   gather_facts: false
   
@@ -8,7 +8,7 @@
       pip:
         name: proxmoxer
   
-    - name: Créer une nouvelle VM QEMU
+    - name: Créer une nouvelle VM avec Cloud init
       community.proxmox.proxmox_kvm:
         api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
         api_port: "{{ lookup('env', 'PROXMOX_PORT') }}"
@@ -19,6 +19,7 @@
 
         node: "proj-cloudi2"
         name: "test-vm"
+        clone: "template-ubuntu-2404"
         full: true
         storage: local-lvm
         format: qcow2
