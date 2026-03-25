@@ -12,16 +12,18 @@
       community.proxmox.proxmox:
         node: "proj-cloudi2"
         
-        api_host: 172.16.206.118
-        api_port: 8006
+        api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
+        api_port: "{{ lookup('env', 'PROXMOX_PORT') }}"
         api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
         api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
         api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
-        validate_certs: false 
+        validate_certs: false
 
         vmid: 145
-        hostname: test-lxc
+        hostname: test-lxc-250326
         ostemplate: local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst
+        
+        features: "nesting=1"
         
         storage: local-lvm
         password: "root123"
