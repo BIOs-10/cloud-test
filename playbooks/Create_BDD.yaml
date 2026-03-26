@@ -1,0 +1,92 @@
+---
+- name: Configuration de la Role BDD et PhpMyAdmin
+  hosts: bdd_servers
+  become: yes
+  vars:
+    # Remplace par une méthode de récupération dynamique si nécessaire
+    student_id: "01"
+
+  tasks:
+    # installation du serveur Maria et PhpMyAdmin 
+    - name: Mise à jour du cache et installation des paquets
+      apt:
+        name:
+          - mariadb-server
+          - phpmyadmin
+          - python3-pymysql
+          - apache2
+        state: present
+        update_cache: yes
+
+    # Mot de passe aléatoire 
+    - name: Génération d'un mot de passe root aléatoire
+      set_fact:
+        db_root_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters,digits') }}"
+
+    - name: Mise à jour du mot de passe root MariaDB
+      mysql_user:
+        name: root
+        password: "{{ db_root_password }}"
+        host_all: yes
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+        state: present
+
+    #  RÉSEAU (Critère d'acceptation 3306) 
+    - name: Autoriser les connexions distantes (Bind 0.0.0.0)
+      lineinfile:
+        path: /etc/mysql/mariadb.conf.d/50-server.cnf
+        regexp: '^bind-address'
+        line: 'bind-address = 0.0.0.0'
+      notify: restart mariadb
+
+    - name: Création de l'utilisateur étudiant avec accès distant
+      mysql_user:
+        name: "etudiant_{{ student_id }}"
+        password: "{{ db_root_password }}"
+        priv: '*.*:ALL'
+        host: '%'
+        state: present
+
+    # PHPMYADMIN (Silent Config) 
+    - name: Pré-configuration de phpMyAdmin (debconf)
+      debconf:
+        name: phpmyadmin
+        question: "{{ item.question }}"
+        value: "{{ item.value }}"
+        vtype: "{{ item.vtype }}"
+      loop:
+        - { question: 'phpmyadmin/dbconfig-install', value: 'false', vtype: 'boolean' }
+        - { question: 'phpmyadmin/reconfigure-webserver', value: 'apache2', vtype: 'multiselect' }
+
+    - name: Déploiement de config.inc.php via Template
+      template:
+        src: templates/config.inc.php.j2
+        dest: /etc/phpmyadmin/config.inc.php
+        owner: root
+        group: www-data
+        mode: '0640'
+      notify: restart apache
+
+    # : NOTIFICATION PORTAIL (DoD)
+    - name: Envoyer les identifiants au portail
+      uri:
+        url: "https://ton-portail-etudiant.com/api/credentials"
+        method: POST
+        body_format: json
+        body:
+          user: "etudiant_{{ student_id }}"
+          password: "{{ db_root_password }}"
+          db_host: "{{ ansible_default_ipv4.address }}"
+        status_code: 200
+      ignore_errors: yes # Pour ne pas bloquer si le portail est hors ligne
+
+  handlers:
+    - name: restart mariadb
+      service:
+        name: mariadb
+        state: restarted
+
+    - name: restart apache
+      service:
+        name: apache2
+        state: restarted
