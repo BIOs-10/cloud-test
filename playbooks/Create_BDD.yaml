@@ -24,7 +24,7 @@
         db_root_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters,digits') }}"
 
     - name: Mise à jour du mot de passe root MariaDB
-        mysql_user:
+      community.mysql.mysql_user:
         name: root
         password: "{{ db_root_password }}"
         host_all: yes
