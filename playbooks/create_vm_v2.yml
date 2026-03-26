@@ -53,9 +53,9 @@
         name: "test-vm"
       register: vm_info
       
-    - name: Stocker l'IP
-      set_fact:
-        vm_ip: "{{ vm_info.proxmox_vms[0].ip_addresses[0] }}"
+    - name: Afficher le contenu de vm_info
+      ansible.builtin.debug:
+      var: vm_info
         
 - name: Ajout dans Bind9
   hosts: DNS2
