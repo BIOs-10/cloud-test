@@ -8,7 +8,7 @@
       pip:
         name: proxmoxer
   
-    - name: Créer une nouvelle VM avec Cloud init
+    - name: Cloner la VM depuis le Template
       community.proxmox.proxmox_kvm:
         node: "proj-cloudi2"
         api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
@@ -25,9 +25,34 @@
         storage: local-lvm
         format: qcow2
         timeout: 500
-
+        state: present
+        
+    - name: Appliquer la configuration Cloud-init custom
+      community.proxmox.proxmox_kvm:
+        node: "proj-cloudi2"
+        api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
+        api_port: "{{ lookup('env', 'PROXMOX_PORT') }}"
+        api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
+        api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
+        api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
+        validate_certs: false
+        name: "test-vm"
+        update: true
+        
         citype: nocloud
         cicustom: "user=local:snippets/user_test.yaml"
-
         ipconfig:
           ipconfig0: "ip=dhcp"
+          
+    - name: Démarrer la VM 
+      community.proxmox.proxmox_kvm:
+        node: "proj-cloudi2"
+        api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
+        api_port: "{{ lookup('env', 'PROXMOX_PORT') }}"
+        api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
+        api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
+        api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
+        validate_certs: false
+        
+        name: "test-vm"
+        state: started
