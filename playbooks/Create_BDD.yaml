@@ -1,6 +1,6 @@
 ---
 - name: Configuration de la Role BDD et PhpMyAdmin
-  hosts: bdd_servers
+  hosts: bddservers
   become: yes
   vars:
     # Remplace par une méthode de récupération dynamique si nécessaire
