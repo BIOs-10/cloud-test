@@ -56,16 +56,3 @@
     - name: Afficher le contenu de vm_info
       ansible.builtin.debug:
       var: vm_info
-        
-- name: Ajout dans Bind9
-  hosts: DNS2
-  gather_facts: false
-  tasks:
-    - name: Ajouter la nouvelle route dans le DNS BIND9 (Exécuté par AWX)
-      shell: |
-        nsupdate -k /etc/bind/awx.key <<EOF
-        server 172.16.184.10
-        zone icube.local
-        update add test.icube.local. 300 A {{ hostvars['localhost']['vm_ip'] }}
-        send
-        EOF
