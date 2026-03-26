@@ -1,0 +1,42 @@
+---
+- name: Création d'une VM ajout dans bind 9
+  hosts: localhost
+  gather_facts: false
+  
+  tasks:
+    - name: install proxmoxer
+      pip:
+        name: proxmoxer
+  
+    - name: Cloner la VM depuis le Template
+      community.proxmox.proxmox_kvm:
+        node: "proj-cloudi2"
+        api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
+        api_port: "{{ lookup('env', 'PROXMOX_PORT') }}"
+        api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
+        api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
+        api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
+        validate_certs: false
+
+       
+        name: "test-vm"
+        clone: "template-ubuntu-2404"
+        full: true
+        storage: local-lvm
+        format: qcow2
+        timeout: 500
+        state: present
+---
+-name: Ajout dans Bind9
+ hosts: DNS2
+ gather_facts: false
+ tasks:
+   - name: 5. Ajouter la nouvelle route dans le DNS BIND9 (Exécuté par AWX)
+       shell: |
+         nsupdate -k /etc/bind/awx.key <<EOF
+         server 172.16.184.10
+         zone icube.local
+         update add test.icube.local. 300 A {{ test_vm }}
+         send
+         EOF
+   
