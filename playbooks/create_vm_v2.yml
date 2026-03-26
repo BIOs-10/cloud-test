@@ -37,8 +37,21 @@
         name: "test-vm"
         state: started
       register: vm_info
+      
+    - name: Attendre que la VM monte
       pause:
         seconds: 20
+        
+    - name: Récupérer les infos de la VM
+      community.proxmox.proxmox_vm_info:
+        node: "proj-cloudi2"
+        api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
+        api_port: "{{ lookup('env', 'PROXMOX_PORT') }}"
+        api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
+        api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
+        api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
+        name: "test-vm"
+      register: vm_info
       
     - name: Stocker l'IP
       set_fact:
