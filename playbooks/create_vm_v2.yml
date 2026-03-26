@@ -16,12 +16,9 @@
         api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
         api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
         validate_certs: false
-
-       
         name: "test-vm"
         clone: "template-ubuntu-2404"
         full: true
-        
         storage: local-lvm
         format: qcow2
         timeout: 500
@@ -52,10 +49,10 @@
   gather_facts: false
   tasks:
     - name: Ajouter la nouvelle route dans le DNS BIND9 (Exécuté par AWX)
-        shell: |
-          nsupdate -k /etc/bind/awx.key <<EOF
-          server 172.16.184.10
-          zone icube.local
-          update add test.icube.local. 300 A {{ hostvars['localhost']['vm_ip'] }}
-          send
-          EOF
+      shell: |
+        nsupdate -k /etc/bind/awx.key <<EOF
+        server 172.16.184.10
+        zone icube.local
+        update add test.icube.local. 300 A {{ hostvars['localhost']['vm_ip'] }}
+        send
+        EOF
