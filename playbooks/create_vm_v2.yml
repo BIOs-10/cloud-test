@@ -55,4 +55,4 @@
       
     - name: Afficher le contenu de vm_info
       ansible.builtin.debug:
-      var: vm_info
+        var: vm_info
