@@ -63,8 +63,8 @@
         method: GET
         headers:
           Authorization: "PVEAPIToken={{ lookup('env', 'PROXMOX_USER') }}!{{ lookup('env', 'PROXMOX_TOKEN_ID') }}={{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
-          validate_certs: false
-          return_content: true
+        validate_certs: false
+        return_content: true
       register: guest_net
     - name: Afficher les interfaces réseau retournées
       ansible.builtin.debug:
