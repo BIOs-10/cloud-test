@@ -23,13 +23,13 @@
       set_fact:
         db_root_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters,digits') }}"
 
-    - name: Mise à jour MDP
-      community.mysql.mysql_user:
-        name: root
-        password: "{{ db_root_password }}"
-        host_all: yes
-        login_unix_socket: /var/run/mysqld/mysqld.sock
-        state: present
+    #- name: Mise à jour MDP
+     # community.mysql.mysql_user:
+      #  name: root
+       # password: "{{ db_root_password }}"
+       # host_all: yes
+       # login_unix_socket: /var/run/mysqld/mysqld.sock
+       # state: present
 
     #  RÉSEAU (Critère d'acceptation 3306) 
     - name: Autoriser les connexions distantes (Bind 0.0.0.0)
