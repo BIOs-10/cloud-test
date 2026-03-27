@@ -66,6 +66,8 @@
         password: "{{ awx_password }}"
         force_basic_auth: yes
         validate_certs: false
+        status_code: [200, 202]
+      register: inventory_sync
         
     - name: Afficher l'adresse IP du net0
       ansible.builtin.debug:
