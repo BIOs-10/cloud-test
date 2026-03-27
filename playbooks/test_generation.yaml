@@ -2,12 +2,7 @@
 - name: test écriture dans proxmox
   hosts: proxmox
   gather_facts: false
-  vars:
-    vm_name: kun
-    vm_user: kun_user
 
   tasks:
-    - name: Générer le cloud-init
-      template:
-        src: user_data.yaml.j2
-        dest: "/var/lib/vz/snippets/user_{{ vm_name }}.yaml"
+    - name: test du ping
+      ping:
