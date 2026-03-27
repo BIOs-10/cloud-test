@@ -69,6 +69,19 @@
         status_code: [200, 202]
       register: inventory_sync
         
-    - name: Afficher l'adresse IP du net0
+    - name: Stocker l'IP de eth0
+      set_fact:
+        vm_ip: >-
+          {{
+            hostvars['test-vm2']['proxmox_agent_interfaces']
+            | selectattr('name', 'equalto', 'eth0')
+            | map(attribute='ip-addresses')
+            | first
+            | reject('search', ':')
+            | map('regex_replace', '/.*$', '')
+            | first
+          }}
+    
+    - name: Afficher l'adresse IP de la VM
       ansible.builtin.debug:
-        msg: "{{ hostvars['test-vm2']['proxmox_agent_interfaces'] }}"
+        var: vm_ip
