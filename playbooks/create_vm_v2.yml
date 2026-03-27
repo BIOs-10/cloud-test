@@ -2,6 +2,9 @@
 - name: Création d'une VM ajout dans bind 9
   hosts: localhost
   gather_facts: false
+  vars:
+    vm_name: "{{ vm_name }}"
+    vm_user: "{{ vm_user }}"
   tasks:
     - name: install proxmoxer
       pip:
@@ -10,6 +13,12 @@
     - name: install dnspython
       pip:
         name: dnspython
+        
+    - name: Générer le cloud-init
+      template:
+        src: user_data.yaml.j2
+        dest: "/var/lib/vz/snippets/user_{{ vm_name }}.yaml"
+      delegate_to: proxmox
   
     - name: Cloner la VM depuis le Template
       community.proxmox.proxmox_kvm:
