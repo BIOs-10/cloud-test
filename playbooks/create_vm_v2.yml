@@ -10,6 +10,11 @@
     - name: install dnspython
       pip:
         name: dnspython
+
+    - name: Vérifier les variables injectées
+      ansible.builtin.debug:
+      msg:
+        - "DNS_SERVER_IP={{ lookup('env', 'DNS_SERVER_IP') | default('VIDE', true) }}"
   
     - name: Cloner la VM depuis le Template
       community.proxmox.proxmox_kvm:
