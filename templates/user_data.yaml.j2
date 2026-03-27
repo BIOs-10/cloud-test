@@ -1,0 +1,15 @@
+#cloud-config
+hostname: {{ vm_name }}
+
+users:
+  - name: {{ vm_user }}
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+
+packages:
+  - qemu-guest-agent
+
+runcmd:
+  - systemctl enable qemu-guest-agent
+  - systemctl start qemu-guest-agent
+  - echo "VM {{ vm_name }} prête avec IP " > /etc/motd
