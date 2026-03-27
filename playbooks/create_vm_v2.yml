@@ -53,36 +53,20 @@
         
         name: "test-vm2"
         state: started
-      register: vm_info
       
     - name: Attendre que la VM monte
       pause:
-        seconds: 50
+        seconds: 40
         
-    - name: Récupérer les infos de la VM
-      community.proxmox.proxmox_vm_info:
-        node: "proj-cloudi2"
-        api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
-        api_port: "{{ lookup('env', 'PROXMOX_PORT') }}"
-        api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
-        api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
-        api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
-        name: "test-vm2"
-      register: vm_info
-      
-    - name: Stocker l'IP
-      set_fact:
-        vmid: "{{ vm_info.proxmox_vms[0].vmid }}"
-      
-    - name: Récupérer les interfaces réseau de la VM via le guest agent
-      ansible.builtin.uri:
-        url: "https://{{ lookup('env', 'PROXMOX_HOST') }}:{{ lookup('env', 'PROXMOX_PORT') }}/api2/json/nodes/proj-cloudi2/qemu/{{ vmid }}/agent/network-get-interfaces"
-        method: GET
-        headers:
-          Authorization: "PVEAPIToken={{ lookup('env', 'PROXMOX_USER') }}!{{ lookup('env', 'PROXMOX_TOKEN_ID') }}={{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
+    - name: Lancer sync via API
+      uri:
+        url: "{{ awx_url }}/api/v2/inventory_sources/{{ source_id }}/update/"
+        method: POST
+        user: "{{ awx_user }}"
+        password: "{{ awx_password }}"
+        force_basic_auth: yes
         validate_certs: false
-        return_content: true
-      register: guest_net
-    - name: Afficher les interfaces réseau retournées
+        
+    - name: Afficher l'adresse IP du net0
       ansible.builtin.debug:
-        var: guest_net.json
+        msg: "{{ hostvars['test-vm2']['proxmox_net0']['ip'] }}"
