@@ -55,11 +55,11 @@
       
     - name: Stocker l'IP
       set_fact:
-        vm_ip: "{{ vm_info.proxmox_vms[0].vmid[0] }}"
+        vmid: "{{ vm_info.proxmox_vms[0].vmid }}"
       
     - name: Récupérer les interfaces réseau de la VM via le guest agent
       ansible.builtin.uri:
-        url: "https://{{ lookup('env', 'PROXMOX_HOST') }}:{{ lookup('env', 'PROXMOX_PORT') }}/api2/json/nodes/proj-cloudi2/qemu/{{ vm_ip }}/agent/network-get-interfaces"
+        url: "https://{{ lookup('env', 'PROXMOX_HOST') }}:{{ lookup('env', 'PROXMOX_PORT') }}/api2/json/nodes/proj-cloudi2/qemu/{{ vmid }}/agent/network-get-interfaces"
         method: GET
         headers:
           Authorization: "PVEAPIToken={{ lookup('env', 'PROXMOX_USER') }}!{{ lookup('env', 'PROXMOX_TOKEN_ID') }}={{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
