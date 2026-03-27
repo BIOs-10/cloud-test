@@ -20,6 +20,7 @@
         api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
         api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
         validate_certs: false
+        
         name: "{{ vm_name }}"
         clone: "template-ubuntu-2404"
         full: true
@@ -37,6 +38,7 @@
         api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
         api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
         validate_certs: false
+        
         name: "{{ vm_name }}"
         update: true
         
@@ -77,7 +79,7 @@
       set_fact:
         vm_ip: >-
           {{
-            hostvars['test-vm2']['proxmox_agent_interfaces']
+            hostvars['{{ vm_name }}']['proxmox_agent_interfaces']
             | selectattr('name', 'equalto', 'eth0')
             | map(attribute='ip-addresses')
             | first
