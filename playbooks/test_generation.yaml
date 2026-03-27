@@ -1,6 +1,6 @@
 ---
 - name: test écriture dans proxmox
-  hosts: proxmox
+  hosts: localhost
   gather_facts: false
   vars:
     vm_name: kun
@@ -11,3 +11,4 @@
       template:
         src: user_data.yaml.j2
         dest: "/var/lib/vz/snippets/user_{{ vm_name }}.yaml"
+      delegate_to: proxmox
