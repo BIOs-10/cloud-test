@@ -6,77 +6,10 @@
     - name: install proxmoxer
       pip:
         name: proxmoxer
-  
-    - name: Cloner la VM depuis le Template
-      community.proxmox.proxmox_kvm:
-        node: "proj-cloudi2"
-        api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
-        api_port: "{{ lookup('env', 'PROXMOX_PORT') }}"
-        api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
-        api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
-        api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
-        validate_certs: false
-        name: "test-vm2"
-        clone: "template-ubuntu-2404"
-        full: true
-        storage: local-lvm
-        format: qcow2
-        timeout: 500
-        state: present
         
-    - name: Appliquer la configuration Cloud-init custom
-      community.proxmox.proxmox_kvm:
-        node: "proj-cloudi2"
-        api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
-        api_port: "{{ lookup('env', 'PROXMOX_PORT') }}"
-        api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
-        api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
-        api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
-        validate_certs: false
-        name: "test-vm2"
-        update: true
-        
-        citype: nocloud
-        cicustom: "user=local:snippets/user_test.yaml"
-        ipconfig:
-          ipconfig0: "ip=dhcp"
-        
-    - name: Démarrer la VM 
-      community.proxmox.proxmox_kvm:
-        node: "proj-cloudi2"
-        api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
-        api_port: "{{ lookup('env', 'PROXMOX_PORT') }}"
-        api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
-        api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
-        api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
-        validate_certs: false
-        
-        name: "test-vm2"
-        state: started
-      register: vm_info
-      
-    - name: Attendre que la VM monte
-      pause:
-        seconds: 20
-        
-    - name: Récupérer les infos de la VM
-      community.proxmox.proxmox_vm_info:
-        node: "proj-cloudi2"
-        api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
-        api_port: "{{ lookup('env', 'PROXMOX_PORT') }}"
-        api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
-        api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
-        api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
-        name: "test-vm2"
-      register: vm_info
-      
-    - name: Stocker l'IP
-      set_fact:
-        vmid: "{{ vm_info.proxmox_vms[0].vmid }}"
-      
     - name: Récupérer les interfaces réseau de la VM via le guest agent
       ansible.builtin.uri:
-        url: "https://{{ lookup('env', 'PROXMOX_HOST') }}:{{ lookup('env', 'PROXMOX_PORT') }}/api2/json/nodes/proj-cloudi2/qemu/{{ vmid }}/agent/network-get-interfaces"
+        url: "https://{{ lookup('env', 'PROXMOX_HOST') }}:{{ lookup('env', 'PROXMOX_PORT') }}/api2/json/nodes/proj-cloudi2/qemu/110/agent/network-get-interfaces"
         method: GET
         headers:
           Authorization: "PVEAPIToken={{ lookup('env', 'PROXMOX_USER') }}!{{ lookup('env', 'PROXMOX_TOKEN_ID') }}={{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
