@@ -71,4 +71,4 @@
         
     - name: Afficher l'adresse IP du net0
       ansible.builtin.debug:
-        msg: "{{ hostvars['test-vm2']['proxmox_net0']['ip'] }}"
+        msg: "{{ hostvars['test-vm2']['proxmox_agent_interfaces'] }}"
