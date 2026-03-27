@@ -6,6 +6,10 @@
     - name: install proxmoxer
       pip:
         name: proxmoxer
+        
+    - name: install dnspython
+      pip:
+        name: dnspython
   
     - name: Cloner la VM depuis le Template
       community.proxmox.proxmox_kvm:
