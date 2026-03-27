@@ -31,4 +31,4 @@ write_files:
 runcmd:
   - systemctl enable --now qemu-guest-agent
   - systemctl enable --now ssh
-  - echo "VM prête  " > /etc/motd
+  - echo "Bienvenue {{ vm_user }} !" > /etc/motd
