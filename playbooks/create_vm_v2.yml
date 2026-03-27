@@ -24,7 +24,11 @@
         name: "{{ vm_name }}"
         clone: "template-ubuntu-2404"
         full: true
+        resize: "scsi0={{ size_disk }}"
         storage: local-lvm
+        cores: "{{ cores }}"
+        memory: "{{ memory }}"
+        
         format: qcow2
         timeout: 500
         state: present
