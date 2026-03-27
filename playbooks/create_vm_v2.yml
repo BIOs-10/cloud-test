@@ -33,7 +33,7 @@
         name: "{{ vm_name }}"
         clone: "template-ubuntu-2404"
         full: true
-        resize: "scsi0={{ size_disk }}"
+        resize: "scsi0={{ size_disk }}G"
         storage: local-lvm
         cores: "{{ cores }}"
         memory: "{{ memory }}"
@@ -56,7 +56,7 @@
         update: true
         
         citype: nocloud
-        cicustom: "user=local:snippets/user_test.yaml"
+        cicustom: "user=local:snippets/user_{{ vm_name }}.yaml"
         ipconfig:
           ipconfig0: "ip=dhcp"
         
