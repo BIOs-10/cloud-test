@@ -33,7 +33,6 @@
         name: "{{ vm_name }}"
         clone: "template-ubuntu-2404"
         full: true
-        resize: "scsi0={{ size_disk }}G"
         storage: local-lvm
         cores: "{{ cores }}"
         memory: "{{ memory }}"
@@ -41,6 +40,13 @@
         format: qcow2
         timeout: 500
         state: present
+        
+    - name: Resize disque
+      community.proxmox.proxmox_disk:
+        name: "{{ vm_name }}"
+        disk: scsi0
+        size: "{{ size_disk }}G"
+        state: resized
         
     - name: Appliquer la configuration Cloud-init custom
       community.proxmox.proxmox_kvm:
