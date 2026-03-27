@@ -16,7 +16,7 @@
         api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
         api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
         validate_certs: false
-        name: "test-vm"
+        name: "test-vm2"
         clone: "template-ubuntu-2404"
         full: true
         storage: local-lvm
@@ -34,7 +34,7 @@
         api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
         validate_certs: false
         
-        name: "test-vm"
+        name: "test-vm2"
         state: started
       register: vm_info
       
@@ -50,9 +50,22 @@
         api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
         api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
         api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
-        name: "test-vm"
+        name: "test-vm2"
       register: vm_info
       
-    - name: Afficher le contenu de vm_info
+    - name: Stocker l'IP
+      set_fact:
+        vm_ip: "{{ vm_info.proxmox_vms[0].vmid[0] }}"
+      
+    - name: Récupérer les interfaces réseau de la VM via le guest agent
+      ansible.builtin.uri:
+        url: "https://{{ lookup('env', 'PROXMOX_HOST') }}:{{ lookup('env', 'PROXMOX_PORT') }}/api2/json/nodes/proj-cloudi2/qemu/{{ vm_ip }}/agent/network-get-interfaces"
+        method: GET
+        headers:
+          Authorization: "PVEAPIToken={{ lookup('env', 'PROXMOX_USER') }}!{{ lookup('env', 'PROXMOX_TOKEN_ID') }}={{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
+          validate_certs: false
+          return_content: true
+      register: guest_net
+    - name: Afficher les interfaces réseau retournées
       ansible.builtin.debug:
-        var: vm_info
+        var: guest_net.json
