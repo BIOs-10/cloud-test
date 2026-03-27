@@ -1,6 +1,6 @@
 ---
 - name: test écriture dans proxmox
-  hosts: proj-cloudi2
+  hosts: proxmox
   gather_facts: false
   vars:
     vm_name: kun
