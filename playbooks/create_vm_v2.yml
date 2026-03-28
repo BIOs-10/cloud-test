@@ -22,7 +22,7 @@
   
     - name: Cloner la VM depuis le Template
       community.proxmox.proxmox_kvm:
-        node: "proj-cloudi2"
+        node: "{{ node_name }}"
         api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
         api_port: "{{ lookup('env', 'PROXMOX_PORT') }}"
         api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
@@ -50,7 +50,7 @@
         
     - name: Appliquer la configuration Cloud-init custom
       community.proxmox.proxmox_kvm:
-        node: "proj-cloudi2"
+        node: "{{ node_name }}"
         api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
         api_port: "{{ lookup('env', 'PROXMOX_PORT') }}"
         api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
@@ -68,7 +68,7 @@
         
     - name: Démarrer la VM 
       community.proxmox.proxmox_kvm:
-        node: "proj-cloudi2"
+        node: "{{ node_name }}"
         api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
         api_port: "{{ lookup('env', 'PROXMOX_PORT') }}"
         api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
