@@ -1,6 +1,7 @@
 #cloud-config
 hostname: "{{ vm_name }}.icube.local"
 manage_etc_hosts: true
+manage_resolv_conf: true
 
 users:
   - name: {{ vm_user }}
@@ -23,10 +24,15 @@ packages:
   - qemu-guest-agent
   - ssh
 
-write_files:
-  - path: /etc/resolv.conf
-    content: |
-      nameserver {{ dns_server_ip }}
+resolv_conf:
+  nameservers:
+    - {{ dns_server_ip }}
+  search:
+    - icube.local
+  domain: icube.local
+  options:
+    rotate: true
+    timeout: 1
 
 runcmd:
   - systemctl enable --now qemu-guest-agent
