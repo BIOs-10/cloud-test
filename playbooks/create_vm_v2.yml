@@ -5,6 +5,7 @@
   vars:
     vm_name: "{{ vm_name }}"
     vm_user: "{{ vm_user }}"
+    dns_server_ip : "{{ lookup('env', 'DNS_SERVER_IP') }}"
   tasks:
     - name: install proxmoxer
       pip:
