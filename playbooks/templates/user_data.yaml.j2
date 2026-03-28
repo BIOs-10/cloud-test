@@ -1,7 +1,6 @@
 #cloud-config
 hostname: "{{ vm_name }}.icube.local"
 manage_etc_hosts: true
-manage_resolv_conf: true
 
 users:
   - name: {{ vm_user }}
@@ -12,6 +11,8 @@ users:
     passwd: "$6$bHFKTOL7bTU9C3ha$9cBDhulxB5u0p7irsStneFbsXw6cZzbN1hcSLYpILDtlVADgooHCYuOBY/qka3YYRAqMU1ChMXUk9pw3q/Ubk0"
 
 chpasswd:
+  list: |
+    {{ vm_user }}:etudiant_3il
   expire: true
 
 ssh_pwauth: true
@@ -24,17 +25,21 @@ packages:
   - qemu-guest-agent
   - ssh
 
-resolv_conf:
-  nameservers:
-    - {{ dns_server_ip }}
-  search:
-    - icube.local
-  domain: icube.local
-  options:
-    rotate: true
-    timeout: 1
+write_files:
+  - path: /etc/netplan/99-custom-dns.yaml
+    content: |
+      network:
+        version: 2
+        ethernets:
+          eth0:
+            nameservers:
+              search: [icube.local]
+              addresses: [{{ dns_server_ip }}]
+            dhcp4-overrides:
+              use-dns: false
 
 runcmd:
+  - netplan apply  
   - systemctl enable --now qemu-guest-agent
   - systemctl enable --now ssh
   - echo "Bienvenue {{ vm_user }} !" > /etc/motd
