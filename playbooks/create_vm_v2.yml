@@ -85,7 +85,7 @@
         
     - name: Récupérer les infos de la VM
       community.proxmox.proxmox_vm_info:
-        node: "proj-cloudi2"
+        node: "{{ node_name }}"
         api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
         api_port: "{{ lookup('env', 'PROXMOX_PORT') }}"
         api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
@@ -100,7 +100,7 @@
         
     - name: Récupérer les interfaces réseau via le guest agent
       ansible.builtin.uri:
-        url: "https://{{ lookup('env', 'PROXMOX_HOST') }}:{{ lookup('env', 'PROXMOX_PORT') }}/api2/json/nodes/proj-cloudi2/qemu/{{ vmid }}/agent/network-get-interfaces"
+        url: "https://{{ lookup('env', 'PROXMOX_HOST') }}:{{ lookup('env', 'PROXMOX_PORT') }}/api2/json/nodes/{{ node_name }}/qemu/{{ vmid }}/agent/network-get-interfaces"
         method: GET
         headers:
           Authorization: "PVEAPIToken={{ lookup('env', 'PROXMOX_USER') }}!{{ lookup('env', 'PROXMOX_TOKEN_ID') }}={{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
