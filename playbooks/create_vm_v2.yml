@@ -83,43 +83,45 @@
       pause:
         seconds: 40
         
-    - name: Lancer sync via API
-      uri:
-        url: "{{ awx_url }}/api/v2/inventory_sources/{{ source_id }}/update/"
-        method: POST
-        user: "{{ awx_user }}"
-        password: "{{ awx_password }}"
-        force_basic_auth: yes
-        validate_certs: false
-        status_code: [200, 202]
-      register: inventory_sync
+    - name: Récupérer les infos de la VM
+      community.proxmox.proxmox_vm_info:
+        node: "proj-cloudi2"
+        api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
+        api_port: "{{ lookup('env', 'PROXMOX_PORT') }}"
+        api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
+        api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
+        api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
+        name: "{{ vm_name }}"
+      register: vm_info
 
-    - name: Attendre la fin du sync
-      pause:
-        seconds: 40
+    - name: Stocker le VMID
+      ansible.builtin.set_fact:
+        vmid: "{{ vm_info.proxmox_vms[0].vmid }}"
         
-    - name: Stocker l'IP de eth0
-      set_fact:
+    - name: Récupérer les interfaces réseau via le guest agent
+      ansible.builtin.uri:
+        url: "https://{{ lookup('env', 'PROXMOX_HOST') }}:{{ lookup('env', 'PROXMOX_PORT') }}/api2/json/nodes/proj-cloudi2/qemu/{{ vmid }}/agent/network-get-interfaces"
+        method: GET
+        headers:
+          Authorization: "PVEAPIToken={{ lookup('env', 'PROXMOX_USER') }}!{{ lookup('env', 'PROXMOX_TOKEN_ID') }}={{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
+        validate_certs: false
+        return_content: true
+      register: guest_net
+      
+    - name: Stocker l'IP IPv4 non-loopback de la VM
+      ansible.builtin.set_fact:
         vm_ip: >-
           {{
-            hostvars[vm_name]['proxmox_agent_interfaces']
-            | selectattr('name', 'equalto', 'eth0')
+            guest_net.json.data.result
+            | rejectattr('name', 'equalto', 'lo')
             | map(attribute='ip-addresses')
-            | first
-            | reject('search', ':')
-            | map('regex_replace', '/.*$', '')
+            | flatten
+            | selectattr('ip-address-type', 'equalto', 'ipv4')
+            | rejectattr('ip-address', 'equalto', '127.0.0.1')
+            | map(attribute='ip-address')
             | first
           }}
-    
-    - name: Ajouter une entrée DNS dans BIND9
-      community.general.nsupdate:
-        server: "{{ lookup('env', 'DNS_SERVER_IP') }}"
-        zone: "icube.local"
-        record: "{{ vm_name }}"
-        type: "A"
-        value: "{{ vm_ip }}"
-        ttl: 300
-        state: present
-        key_name: "{{ lookup('env', 'DNS_KEY_NAME') }}"
-        key_secret: "{{ lookup('env', 'DNS_KEY_SECRET') }}"
-        key_algorithm: "hmac-sha256"
+          
+    - name: Afficher l'IP récupérée
+      ansible.builtin.debug:
+        var: vm_ip
