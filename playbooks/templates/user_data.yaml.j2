@@ -26,7 +26,7 @@ packages:
 write_files:
   - path: /etc/resolv.conf
     content: |
-      nameserver 172.16.184.10
+      nameserver {{ dns_server_ip }}
 
 runcmd:
   - systemctl enable --now qemu-guest-agent
