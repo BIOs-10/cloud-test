@@ -98,7 +98,7 @@
       set_fact:
         vm_ip: >-
           {{
-            hostvars['{{ vm_name }}']['proxmox_agent_interfaces']
+            hostvars[vm_name]['proxmox_agent_interfaces']
             | selectattr('name', 'equalto', 'eth0')
             | map(attribute='ip-addresses')
             | first
