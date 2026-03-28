@@ -96,7 +96,7 @@
 
     - name: Attendre la fin du sync
       pause:
-        seconds: 25
+        seconds: 40
         
     - name: Stocker l'IP de eth0
       set_fact:
