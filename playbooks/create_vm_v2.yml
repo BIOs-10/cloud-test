@@ -125,6 +125,15 @@
             | first
           }}
           
-    - name: Afficher l'IP récupérée
-      ansible.builtin.debug:
-        var: vm_ip
+    - name: Ajouter une entrée DNS dans BIND9
+      community.general.nsupdate:
+        server: "{{ lookup('env', 'DNS_SERVER_IP') }}"
+        zone: "icube.local"
+        record: "{{ vm_name }}"
+        type: "A"
+        value: "{{ vm_ip }}"
+        ttl: 300
+        state: present
+        key_name: "{{ lookup('env', 'DNS_KEY_NAME') }}"
+        key_secret: "{{ lookup('env', 'DNS_KEY_SECRET') }}"
+        key_algorithm: "hmac-sha256"
