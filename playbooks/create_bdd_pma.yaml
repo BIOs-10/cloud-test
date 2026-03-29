@@ -15,6 +15,13 @@
       validate_certs: false
 
   tasks:
+    - name: install proxmoxer
+      pip:
+        name: proxmoxer
+        
+    - name: install dnspython
+      pip:
+        name: dnspython
   
     - name: créer le dossier
       file:
