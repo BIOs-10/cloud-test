@@ -41,8 +41,6 @@
         storage: local-lvm
         cores: "{{ cpu }}"
         memory: "{{ ram }}"
-        net:
-          net0: "virtio,bridge=vmbr2"
         
         format: qcow2
         timeout: 500
@@ -63,6 +61,8 @@
         
         citype: nocloud
         cicustom: "user=local:snippets/user_{{ vm_name_etu }}.yaml"
+        net:
+          net0: "virtio,bridge=vmbr2,firewall=1"
         ipconfig:
           ipconfig0: "ip=dhcp"
         
