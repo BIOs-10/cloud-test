@@ -3,8 +3,8 @@
   hosts: localhost
   gather_facts: false
   vars:
-    vm_name: "{{ vm_name }}"
-    vm_user: "{{ vm_user }}"
+    vm_name: "{{ vm_name }}-{{ username }}"
+    vm_user: "{{ username }}"
     dns_server_ip : "{{ lookup('env', 'DNS_SERVER_IP') }}"
     
   module_defaults:
@@ -39,8 +39,8 @@
         clone: "template-ubuntu-2404"
         full: true
         storage: local-lvm
-        cores: "{{ cores }}"
-        memory: "{{ memory }}"
+        cores: "{{ cpu }}"
+        memory: "{{ ram }}"
         net:
           net0: "virtio,bridge=vmbr2"
         
@@ -52,7 +52,7 @@
       community.proxmox.proxmox_disk:
         name: "{{ vm_name }}"
         disk: scsi0
-        size: "{{ size_disk }}G"
+        size: "{{ disk }}G"
         state: resized
         
     - name: Appliquer la configuration Cloud-init custom
