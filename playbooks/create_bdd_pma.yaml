@@ -40,8 +40,10 @@
       delegate_to: testbd
 
     - name: Lancer le docker compose-up
-      shell: cd /etc/phpMyAdmin/{{ username }}/ && docker compose up -d
-      delegate_to: testbd
+      hosts: testbd
+      community.docker.docker_compose_v2:
+      project_src: "/etc/phpMyAdmin/{{ username }}/"
+      state: present
         
     - name: Récupérer les infos de la VM
       community.proxmox.proxmox_vm_info:
