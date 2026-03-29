@@ -41,8 +41,8 @@
 
     - name: Lancer le docker compose-up
       community.docker.docker_compose_v2:
-      project_src: "/etc/phpMyAdmin/{{ username }}/"
-      state: present
+        project_src: "/etc/phpMyAdmin/{{ username }}/"
+        state: present
       delegate_to: testbd
         
     - name: Récupérer les infos de la VM
