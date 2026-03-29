@@ -1,0 +1,63 @@
+---
+- name: Hébergement d'un site web statique
+  hosts: localhost
+  gather_facts: false
+  vars:
+    username: "{{ username }}"
+    domain: "{{ domain }}"
+    html_content: "{{ html_content }}"
+    site_id: "{{ username }}-{{ domain | replace('.html.icube.local', '') | replace('.', '-') }}"
+
+  tasks:
+
+    - name: Créer le dossier du site
+      file:
+        path: "/etc/website/{{ site_id }}/html"
+        state: directory
+        mode: '0755'
+      delegate_to: web
+
+    - name: Écrire le fichier HTML
+      copy:
+        dest: "/etc/website/{{ site_id }}/html/index.html"
+        content: "{{ html_content }}"
+      delegate_to: web
+
+    - name: Générer le docker-compose
+      copy:
+        dest: "/etc/website/{{ site_id }}/docker-compose.yaml"
+        content: |
+          services:
+            {{ site_id }}:
+              image: nginx:alpine
+              restart: unless-stopped
+              volumes:
+                - ./html:/usr/share/nginx/html:ro
+              networks:
+                - proxy
+              labels:
+                - "traefik.enable=true"
+                - "traefik.http.routers.{{ site_id }}.rule=Host(`{{ domain }}`)"
+                - "traefik.http.routers.{{ site_id }}.entrypoints=web"
+                - "traefik.http.services.{{ site_id }}.loadbalancer.server.port=80"
+          networks:
+            proxy:
+              external: true
+      delegate_to: web
+
+    - name: Lancer le docker compose
+      shell: cd /etc/website/{{ site_id }}/ && docker compose up -d
+      delegate_to: web
+
+    - name: Ajouter une entrée DNS dans BIND9
+      community.general.nsupdate:
+        server: "{{ lookup('env', 'DNS_SERVER_IP') }}"
+        zone: "icube.local"
+        record: "{{ domain | replace('.icube.local', '') }}"
+        type: "A"
+        value: "{{ lookup('env', 'WEB_SERVER_IP') }}"
+        ttl: 300
+        state: present
+        key_name: "{{ lookup('env', 'DNS_KEY_NAME') }}"
+        key_secret: "{{ lookup('env', 'DNS_KEY_SECRET') }}"
+        key_algorithm: "hmac-sha256"
