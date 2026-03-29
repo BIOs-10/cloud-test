@@ -6,6 +6,16 @@
     vm_name: "{{ vm_name }}"
     vm_user: "{{ vm_user }}"
     dns_server_ip : "{{ lookup('env', 'DNS_SERVER_IP') }}"
+    
+  module_defaults:
+    group/community.proxmox.proxmox:
+      api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
+      api_port: "{{ lookup('env', 'PROXMOX_PORT') }}"
+      api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
+      api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
+      api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
+      validate_certs: false
+  
   tasks:
     - name: install proxmoxer
       pip:
@@ -24,19 +34,15 @@
     - name: Cloner la VM depuis le Template
       community.proxmox.proxmox_kvm:
         node: "{{ node_name }}"
-        api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
-        api_port: "{{ lookup('env', 'PROXMOX_PORT') }}"
-        api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
-        api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
-        api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
-        validate_certs: false
-        
+    
         name: "{{ vm_name }}"
         clone: "template-ubuntu-2404"
         full: true
         storage: local-lvm
         cores: "{{ cores }}"
         memory: "{{ memory }}"
+        net:
+          net0: "virtio,bridge=vmbr2"
         
         format: qcow2
         timeout: 500
@@ -51,13 +57,6 @@
         
     - name: Appliquer la configuration Cloud-init custom
       community.proxmox.proxmox_kvm:
-        node: "{{ node_name }}"
-        api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
-        api_port: "{{ lookup('env', 'PROXMOX_PORT') }}"
-        api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
-        api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
-        api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
-        validate_certs: false
         
         name: "{{ vm_name }}"
         update: true
@@ -70,13 +69,6 @@
     - name: Démarrer la VM 
       community.proxmox.proxmox_kvm:
         node: "{{ node_name }}"
-        api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
-        api_port: "{{ lookup('env', 'PROXMOX_PORT') }}"
-        api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
-        api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
-        api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
-        validate_certs: false
-        
         name: "{{ vm_name }}"
         state: started
       
@@ -87,11 +79,6 @@
     - name: Récupérer les infos de la VM
       community.proxmox.proxmox_vm_info:
         node: "{{ node_name }}"
-        api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
-        api_port: "{{ lookup('env', 'PROXMOX_PORT') }}"
-        api_user: "{{ lookup('env', 'PROXMOX_USER') }}"
-        api_token_id: "{{ lookup('env', 'PROXMOX_TOKEN_ID') }}"
-        api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
         name: "{{ vm_name }}"
       register: vm_info
 
