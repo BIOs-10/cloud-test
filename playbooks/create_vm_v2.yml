@@ -57,7 +57,7 @@
         
     - name: Appliquer la configuration Cloud-init custom
       community.proxmox.proxmox_kvm:
-        
+        node: "{{ node_name }}"
         name: "{{ vm_name }}"
         update: true
         
