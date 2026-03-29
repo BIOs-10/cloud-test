@@ -21,13 +21,13 @@
         path: "/etc/phpMyAdmin/{{ username }}"
         state: directory
         mode: '0755'
-      delegate_to: testBd
+      delegate_to: testbd
       
     - name: Générer le docker-compose
       template:
         src: docker_compose.yaml.j2
         dest: "/etc/phpMyAdmin/{{ username }}/docker-compose.yaml"
-      delegate_to: testBd
+      delegate_to: testbd
       
     - name: Génerer le fichier .env
       copy:
@@ -37,16 +37,16 @@
           MYSQL_DATABASE={{ username }}_db
           MYSQL_USER={{ username }}
           MYSQL_PASSWORD=etudiant_3il
-      delegate_to: testBd
+      delegate_to: testbd
 
       - name: Lancer le docker compose-up
         shell: cd /etc/phpMyAdmin/{{ username }}/ && docker compose up -d
-        delegate_to: testBd
+        delegate_to: testbd
         
       - name: Récupérer les infos de la VM
         community.proxmox.proxmox_vm_info:
           node: "{{ node_name }}"
-          name: testBd
+          name: testbd
         register: vm_info
 
 
