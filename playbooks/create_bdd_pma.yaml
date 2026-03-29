@@ -39,59 +39,58 @@
           MYSQL_PASSWORD=etudiant_3il
       delegate_to: testbd
 
-      - name: Lancer le docker compose-up
-        shell: cd /etc/phpMyAdmin/{{ username }}/ && docker compose up -d
-        delegate_to: testbd
+    - name: Lancer le docker compose-up
+      shell: cd /etc/phpMyAdmin/{{ username }}/ && docker compose up -d
+      delegate_to: testbd
         
-      - name: Récupérer les infos de la VM
-        community.proxmox.proxmox_vm_info:
-          node: "{{ node_name }}"
-          name: testbd
-        register: vm_info
+    - name: Récupérer les infos de la VM
+      community.proxmox.proxmox_vm_info:
+        node: "{{ node_name }}"
+        name: testbd
+      register: vm_info
 
-
-      - name: Stocker le VMID
-        ansible.builtin.set_fact:
-          vmid: "{{ vm_info.proxmox_vms[0].vmid }}"
+    - name: Stocker le VMID
+      ansible.builtin.set_fact:
+        vmid: "{{ vm_info.proxmox_vms[0].vmid }}"
         
-      - name: Récupérer les interfaces réseau via le guest agent
-        ansible.builtin.uri:
-          url: "https://{{ lookup('env', 'PROXMOX_HOST') }}:{{ lookup('env', 'PROXMOX_PORT') }}/api2/json/nodes/{{ node_name }}/qemu/{{ vmid }}/agent/network-get-interfaces"
-          method: GET
-          headers:
-            Authorization: "PVEAPIToken={{ lookup('env', 'PROXMOX_USER') }}!{{ lookup('env', 'PROXMOX_TOKEN_ID') }}={{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
-          validate_certs: false
-          return_content: true
-        register: guest_net
-        retries: 5
-        delay: 5
-        until: guest_net.json.data is not none
+    - name: Récupérer les interfaces réseau via le guest agent
+      ansible.builtin.uri:
+        url: "https://{{ lookup('env', 'PROXMOX_HOST') }}:{{ lookup('env', 'PROXMOX_PORT') }}/api2/json/nodes/{{ node_name }}/qemu/{{ vmid }}/agent/network-get-interfaces"
+        method: GET
+        headers:
+          Authorization: "PVEAPIToken={{ lookup('env', 'PROXMOX_USER') }}!{{ lookup('env', 'PROXMOX_TOKEN_ID') }}={{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
+        validate_certs: false
+        return_content: true
+      register: guest_net
+      retries: 5
+      delay: 5
+      until: guest_net.json.data is not none
         
-      - name: Stocker l'IP IPv4 non-loopback de la VM
-        ansible.builtin.set_fact:
-          vm_ip: >-
-            {{
-              guest_net.json.data.result
-              | rejectattr('name', 'equalto', 'lo')
-              | map(attribute='ip-addresses')
-              | flatten
-              | selectattr('ip-address-type', 'equalto', 'ipv4')
-              | rejectattr('ip-address', 'equalto', '127.0.0.1')
-              | map(attribute='ip-address')
-              | first
-            }}
+    - name: Stocker l'IP IPv4 non-loopback de la VM
+      ansible.builtin.set_fact:
+        vm_ip: >-
+          {{
+            guest_net.json.data.result
+            | rejectattr('name', 'equalto', 'lo')
+            | map(attribute='ip-addresses')
+            | flatten
+            | selectattr('ip-address-type', 'equalto', 'ipv4')
+            | rejectattr('ip-address', 'equalto', '127.0.0.1')
+            | map(attribute='ip-address')
+            | first
+          }}
         
-      - name: Ajouter une entrée DNS dans BIND9
-        community.general.nsupdate:
-          server: "{{ lookup('env', 'DNS_SERVER_IP') }}"
-          zone: "icube.local"
-          record: "{{ username }}-pma"
-          type: "A"
-          value: "{{ vm_ip }}"
-          ttl: 300
-          state: present
-          key_name: "{{ lookup('env', 'DNS_KEY_NAME') }}"
-          key_secret: "{{ lookup('env', 'DNS_KEY_SECRET') }}"
-          key_algorithm: "hmac-sha256"
+    - name: Ajouter une entrée DNS dans BIND9
+      community.general.nsupdate:
+        server: "{{ lookup('env', 'DNS_SERVER_IP') }}"
+        zone: "icube.local"
+        record: "{{ username }}-pma"
+        type: "A"
+        value: "{{ vm_ip }}"
+        ttl: 300
+        state: present
+        key_name: "{{ lookup('env', 'DNS_KEY_NAME') }}"
+        key_secret: "{{ lookup('env', 'DNS_KEY_SECRET') }}"
+        key_algorithm: "hmac-sha256"
       
   
