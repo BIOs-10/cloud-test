@@ -2,13 +2,12 @@
 - name: Hébergement d'un site web statique
   hosts: localhost
   gather_facts: false
-  vars:
-    username: "{{ username }}"
-    domain: "{{ domain }}"
-    html_content: "{{ html_content }}"
-    site_id: "{{ username }}-{{ domain | replace('.html.icube.local', '') | replace('.', '-') }}"
 
   tasks:
+
+    - name: Définir le site_id
+      ansible.builtin.set_fact:
+        site_id: "{{ username }}-{{ domain | replace('.html.icube.local', '') | replace('.', '-') }}"
 
     - name: Créer le dossier du site
       file:
