@@ -36,7 +36,7 @@
         node: "{{ node_name }}"
     
         name: "{{ vm_name }}"
-        clone: "template-ubuntu-2404"
+        clone: "{{ iso }}"
         full: true
         storage: local-lvm
         cores: "{{ cpu }}"
