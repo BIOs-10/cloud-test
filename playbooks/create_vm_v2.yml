@@ -3,7 +3,7 @@
   hosts: localhost
   gather_facts: false
   vars:
-    vm_name: "{{ vm_name }}-{{ username }}"
+    vm_name_etu: "{{ vm_name }}-{{ username }}"
     vm_user: "{{ username }}"
     dns_server_ip : "{{ lookup('env', 'DNS_SERVER_IP') }}"
     
@@ -28,14 +28,14 @@
     - name: Générer le cloud-init
       template:
         src: user_data.yaml.j2
-        dest: "/var/lib/vz/snippets/user_{{ vm_name }}.yaml"
+        dest: "/var/lib/vz/snippets/user_{{ vm_name_etu }}.yaml"
       delegate_to: proxmox
   
     - name: Cloner la VM depuis le Template
       community.proxmox.proxmox_kvm:
         node: "{{ node_name }}"
     
-        name: "{{ vm_name }}"
+        name: "{{ vm_name_etu }}"
         clone: "{{ iso }}"
         full: true
         storage: local-lvm
@@ -50,7 +50,7 @@
         
     - name: Resize disque
       community.proxmox.proxmox_disk:
-        name: "{{ vm_name }}"
+        name: "{{ vm_name_etu }}"
         disk: scsi0
         size: "{{ disk }}G"
         state: resized
@@ -58,18 +58,18 @@
     - name: Appliquer la configuration Cloud-init custom
       community.proxmox.proxmox_kvm:
         node: "{{ node_name }}"
-        name: "{{ vm_name }}"
+        name: "{{ vm_name_etu }}"
         update: true
         
         citype: nocloud
-        cicustom: "user=local:snippets/user_{{ vm_name }}.yaml"
+        cicustom: "user=local:snippets/user_{{ vm_name_etu }}.yaml"
         ipconfig:
           ipconfig0: "ip=dhcp"
         
     - name: Démarrer la VM 
       community.proxmox.proxmox_kvm:
         node: "{{ node_name }}"
-        name: "{{ vm_name }}"
+        name: "{{ vm_name_etu }}"
         state: started
       
     - name: Attendre que la VM monte
@@ -79,7 +79,7 @@
     - name: Récupérer les infos de la VM
       community.proxmox.proxmox_vm_info:
         node: "{{ node_name }}"
-        name: "{{ vm_name }}"
+        name: "{{ vm_name_etu }}"
       register: vm_info
 
     - name: Stocker le VMID
@@ -117,7 +117,7 @@
       community.general.nsupdate:
         server: "{{ lookup('env', 'DNS_SERVER_IP') }}"
         zone: "icube.local"
-        record: "{{ vm_name }}"
+        record: "{{ vm_name_etu }}"
         type: "A"
         value: "{{ vm_ip }}"
         ttl: 300
