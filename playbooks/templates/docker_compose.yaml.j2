@@ -25,7 +25,7 @@ services:
       - proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.pma{{ username }}.rule=Host(`{{ username }}-pma.localhost`)"
+      - "traefik.http.routers.pma{{ username }}.rule=Host(`{{ username }}-pma.icube.local`)"
       - "traefik.http.routers.pma{{ username }}.entrypoints=web"
       - "traefik.http.services.pma{{ username }}.loadbalancer.server.port=80"
 
