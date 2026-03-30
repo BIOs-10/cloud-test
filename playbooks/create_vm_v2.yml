@@ -40,7 +40,7 @@
         full: true
         storage: local-lvm
         cores: "{{ cpu }}"
-        memory: "{{ ram }}"
+        memory: 4096
         
         format: qcow2
         timeout: 500
