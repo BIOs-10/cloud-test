@@ -45,7 +45,7 @@
     - name: Récupérer les infos de la VM
       community.proxmox.proxmox_vm_info:
         node: "{{ node_name }}"
-        name: testBd
+        name: testbdn
       register: vm_info
 
     - name: Stocker le VMID
