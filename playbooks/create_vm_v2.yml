@@ -61,7 +61,7 @@
         ipconfig:
           ipconfig0: "ip=dhcp"
         cores: "{{ cpu }}"
-        memory: "{{ memory }}"
+        memory: "{{ ram }}"
         
         update: true
         
