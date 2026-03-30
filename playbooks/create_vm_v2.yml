@@ -62,7 +62,7 @@
         citype: nocloud
         cicustom: "user=local:snippets/user_{{ vm_name_etu }}.yaml"
         net:
-          net0: "virtio,bridge=vmbr2,firewall=1"
+          net0: "model=virtio,bridge=vmbr2,firewall=1"
         ipconfig:
           ipconfig0: "ip=dhcp"
         
