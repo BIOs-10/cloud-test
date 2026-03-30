@@ -61,7 +61,7 @@
         ipconfig:
           ipconfig0: "ip=dhcp"
         cores: "{{ cpu }}"
-        memory: 4096
+        memory: "{{ memory }}"
         
         update: true
         
@@ -73,7 +73,7 @@
       
     - name: Attendre que la VM monte
       pause:
-        seconds: 50
+        seconds: 40
         
     - name: Récupérer les infos de la VM
       community.proxmox.proxmox_vm_info:
