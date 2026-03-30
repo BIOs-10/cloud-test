@@ -4,7 +4,14 @@
   gather_facts: false
 
   tasks:
-
+    - name: install proxmoxer
+      pip:
+        name: proxmoxer
+        
+    - name: install dnspython
+      pip:
+        name: dnspython
+        
     - name: Définir le site_id
       ansible.builtin.set_fact:
         site_id: "{{ username }}-{{ domain | replace('.html.icube.local', '') | replace('.', '-') }}"
