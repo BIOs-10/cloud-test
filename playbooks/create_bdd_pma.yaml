@@ -40,8 +40,6 @@
       community.docker.docker_compose_v2:
         project_src: "/etc/phpMyAdmin/{{ username }}/"
         state: present
-        env_files:
-          - "/etc/phpMyAdmin/{{ username }}/.env"
       delegate_to: testbd
         
     - name: Récupérer les infos de la VM
