@@ -73,7 +73,7 @@
       
     - name: Attendre que la VM monte
       pause:
-        seconds: 40
+        seconds: 50
         
     - name: Récupérer les infos de la VM
       community.proxmox.proxmox_vm_info:
