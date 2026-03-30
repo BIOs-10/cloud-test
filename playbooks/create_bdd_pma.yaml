@@ -36,16 +36,6 @@
         dest: "/etc/phpMyAdmin/{{ username }}/docker-compose.yaml"
       delegate_to: testbd
       
-    - name: Génerer le fichier .env
-      copy:
-        dest: "/etc/phpMyAdmin/{{ username }}/.env"
-        content: |
-          MYSQL_ROOT_PASSWORD=supersecret
-          MYSQL_DATABASE={{ username }}_db
-          MYSQL_USER={{ username }}
-          MYSQL_PASSWORD=etudiant_3il
-      delegate_to: testbd
-
     - name: Lancer le docker compose-up
       community.docker.docker_compose_v2:
         project_src: "/etc/phpMyAdmin/{{ username }}/"
