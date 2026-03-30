@@ -39,8 +39,6 @@
         clone: "{{ iso }}"
         full: true
         storage: local-lvm
-        cores: "{{ cpu }}"
-        memory: 4096
         
         format: qcow2
         timeout: 500
@@ -56,15 +54,16 @@
     - name: Appliquer la configuration Cloud-init custom
       community.proxmox.proxmox_kvm:
         node: "{{ node_name }}"
-        name: "{{ vm_name_etu }}"
-        update: true
         
+        name: "{{ vm_name_etu }}"
         citype: nocloud
         cicustom: "user=local:snippets/user_{{ vm_name_etu }}.yaml"
-        net:
-          net0: "model=virtio,bridge=vmbr2,firewall=1"
         ipconfig:
           ipconfig0: "ip=dhcp"
+        cores: "{{ cpu }}"
+        memory: 4096
+        
+        update: true
         
     - name: Démarrer la VM 
       community.proxmox.proxmox_kvm:
