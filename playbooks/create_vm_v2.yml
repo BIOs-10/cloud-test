@@ -94,8 +94,8 @@
         validate_certs: false
         return_content: true
       register: guest_net
-      retries: 5
-      delay: 5
+      retries: 10
+      delay: 10
       until: guest_net.json.data is not none
       
     - name: Stocker l'IP IPv4 non-loopback de la VM
