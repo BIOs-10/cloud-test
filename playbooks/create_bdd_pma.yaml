@@ -3,7 +3,7 @@
   hosts: localhost
   gather_facts: false
   vars:
-    username: "{{ username }}"
+    username_system: "{{ username }}"
     
   module_defaults:
     group/community.proxmox.proxmox:
@@ -25,7 +25,7 @@
   
     - name: créer le dossier
       file:
-        path: "/etc/phpMyAdmin/{{ username }}"
+        path: "/etc/phpMyAdmin/{{ username_system }}"
         state: directory
         mode: '0755'
       delegate_to: testbd
@@ -33,12 +33,12 @@
     - name: Générer le docker-compose
       template:
         src: docker_compose.yaml.j2
-        dest: "/etc/phpMyAdmin/{{ username }}/docker-compose.yaml"
+        dest: "/etc/phpMyAdmin/{{ username_system }}/docker-compose.yaml"
       delegate_to: testbd
       
     - name: Lancer le docker compose-up
       community.docker.docker_compose_v2:
-        project_src: "/etc/phpMyAdmin/{{ username }}/"
+        project_src: "/etc/phpMyAdmin/{{ username_system }}/"
         state: present
       delegate_to: testbd
         
@@ -83,7 +83,7 @@
       community.general.nsupdate:
         server: "{{ lookup('env', 'DNS_SERVER_IP') }}"
         zone: "icube.local"
-        record: "{{ username }}-pma"
+        record: "{{ username_system }}-pma"
         type: "A"
         value: "{{ vm_ip }}"
         ttl: 300
