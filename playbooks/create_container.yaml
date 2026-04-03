@@ -1,5 +1,5 @@
 ---
-- name: Création d'une VM sur Proxmox
+- name: Création d'un container sur Proxmox
   hosts: localhost
   gather_facts: false
   
@@ -8,9 +8,9 @@
       pip:
         name: proxmoxer
   
-    - name: Créer une nouvelle VM QEMU
+    - name: Créer un nouveau container
       community.proxmox.proxmox:
-        node: "proj-cloudi2"
+        node: "{{ node_name }}"
         
         api_host: "{{ lookup('env', 'PROXMOX_HOST') }}"
         api_port: "{{ lookup('env', 'PROXMOX_PORT') }}"
@@ -19,7 +19,6 @@
         api_token_secret: "{{ lookup('env', 'PROXMOX_TOKEN_SECRET') }}"
         validate_certs: false
 
-        vmid: 145
         hostname: test-lxc-250326
         ostemplate: local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst
         
